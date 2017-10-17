@@ -64,7 +64,7 @@ function layoutEvents(events) {
   let eventsPerHour = createArrayOfArrays(24);
   let laidEvents = events.map(initialEvent => {
     const startHour = Math.floor(initialEvent.start / 60);
-    const endHour = Math.ceil(initialEvent.start / 60);
+    const endHour = Math.ceil(initialEvent.end / 60);
     let event = Object.assign({}, initialEvent, {
       slots: createRange(startHour, endHour),
     });
