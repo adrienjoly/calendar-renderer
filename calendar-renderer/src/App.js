@@ -8,6 +8,7 @@ class App extends Component {
     this.state = {
       events: []
     };
+    window.layoutDay = (events) => this.setState({ events });
   }
   render() {
     return (
@@ -18,5 +19,14 @@ class App extends Component {
     );
   }
 }
+
+setTimeout(() => {
+  window.layoutDay([
+    {start: 30, end: 150},
+    {start: 540, end: 600},
+    {start: 560, end: 620},
+    {start: 610, end: 670}
+  ]);
+}, 2000);
 
 export default App;
