@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
 import './App.css';
+import Calendar from './Calendar';
 
 class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      events: []
+    };
+  }
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-        </header>
-        <p>
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <Calendar events={this.state.events}>
+        </Calendar>
       </div>
     );
   }

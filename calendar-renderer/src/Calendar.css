@@ -1,0 +1,11 @@
+.Calendar {
+  display: inline-block; /* to adjust size based on children */
+}
+
+.Calendar-container {
+  box-sizing: border-box;
+  width: 620px;
+  height: 720px;
+  padding: 10px;
+  background-color: #eeeeee;
+}
