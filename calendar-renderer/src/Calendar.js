@@ -44,10 +44,9 @@ function takeAvailPos(event, eventsPerHour) {
 function layoutEvents(events) {
   let eventsPerHour = createArrayOfArrays(24);
   let laidEvents = events.map(initialEvent => {
-    let idCounter = 0;
     const startHour = Math.floor(initialEvent.start / 60);
     const endHour = Math.ceil(initialEvent.start / 60);
-    let event = Object.assign({ id: idCounter++ }, initialEvent, {
+    let event = Object.assign({}, initialEvent, {
       slots: createRange(startHour, endHour),
     });
     event.slots.forEach(hour => eventsPerHour[hour].push(event));
