@@ -1,16 +1,32 @@
 .Calendar {
   display: inline-block; /* to adjust size based on children */
+  text-align: left;
 }
 
 .Calendar-container {
   position: relative;
   box-sizing: border-box;
-  background-color: #eeeeee;
+  background-color: #ececec;
 }
 
 .Calendar-event {
   position: absolute;
   box-sizing: border-box;
   width: 100%; /* by default */
-  border: 1px solid blue; /* TODO */
+  border: 1px solid #e0e0e0;
+  border-left: 4px solid #4c6ea8;
+  background-color: #ffffff;
+  padding: 8px;
+}
+
+.Calendar-event-name {
+  color: #4c6ea8;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.Calendar-event-location {
+  color: #8F8F87;
+  font-size: 8px;
+  margin-top: 4px;
 }

@@ -13,14 +13,15 @@ const HOURS_PER_DAY = DAY_END - DAY_START;
 const PIXELS_PER_MINUTE = CONTAINER_HEIGHT / HOURS_PER_DAY;
 
 const containerStyle = {
-  width: `${CONTAINER_WIDTH + 2 * CONTAINER_PADDING}px`,
-  height: `${CONTAINER_HEIGHT + 2 * CONTAINER_PADDING}px`,
+  width: CONTAINER_WIDTH + 2 * CONTAINER_PADDING,
+  height: CONTAINER_HEIGHT + 2 * CONTAINER_PADDING,
+  padding: CONTAINER_PADDING,
 };
 
 const styleLaidEvent = event => ({
-  height: `${(event.end - event.start) * PIXELS_PER_MINUTE}px`,
-  top: `${event.start * PIXELS_PER_MINUTE}px`,
-  left: CONTAINER_WIDTH * (event.pos / event.len),
+  height: (event.end - event.start) * PIXELS_PER_MINUTE,
+  top: CONTAINER_PADDING + event.start * PIXELS_PER_MINUTE,
+  left: CONTAINER_PADDING + CONTAINER_WIDTH * (event.pos / event.len),
   width: CONTAINER_WIDTH / event.len,
 });
 
