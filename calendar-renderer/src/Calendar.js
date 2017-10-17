@@ -64,25 +64,24 @@ function layoutEvents(events) {
   }));
 }
 
+// rendering functions
+
+const renderEvents = events =>
+  layoutEvents(events).map((event, index) =>
+    <div key={index} className="Calendar-event" style={styleLaidEvent(event)}>
+      <div className="Calendar-event-name">Sample Item ({event.start})</div>
+      <div className="Calendar-event-location">Sample Location</div>
+    </div>
+  );
+
 // Calendar component
 
 class Calendar extends Component {
   render() {
-    console.log(this.props);
-    const laidEvents = layoutEvents(this.props.events);
-    console.log('laid => ', laidEvents);
-    const styledEvents = laidEvents.map(event =>
-      Object.assign({}, event, { style: styleLaidEvent(event) }));
-    const renderedEvents = styledEvents.map((event, index) =>
-      <div key={index} className="Calendar-event" style={event.style}>
-        <div className="Calendar-event-name">Sample Item ({event.start})</div>
-        <div className="Calendar-event-location">Sample Location</div>
-      </div>
-    );
     return (
       <div className="Calendar">
         <div className="Calendar-container" style={containerStyle}>
-          {renderedEvents}
+          {renderEvents(this.props.events)}
         </div>
       </div>
     );
