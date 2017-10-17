@@ -48,16 +48,25 @@ const createRange = (first, last) =>
 
 // layout helpers
 
-const computeMaxLen = (event, eventsPerHour) =>
-  Math.max.apply(Math, event.slots.map(hour => eventsPerHour[hour].length));
+const getConflictingEvents = (event, eventsPerHour) =>
+  event.slots.reduce((conflictEvents, hour) =>
+    conflictEvents.concat(eventsPerHour[hour]), []);
 
+const getTakenPositions = (event, eventsPerHour) =>
+  new Set(getConflictingEvents(event, eventsPerHour)
+    .filter(slotEvent => slotEvent !== event) // exclude `event`
+    .filter(slotEvent => slotEvent.end >= event.start)
+    .map(slotEvent => slotEvent.pos));
+
+const computeMaxLen = (event, eventsPerHour) => {
+  const conflictEvents = getConflictingEvents(event, eventsPerHour);
+  const deduped = Array.from(new Set(conflictEvents));
+  //return Math.max.apply(Math, event.slots.map(hour => eventsPerHour[hour].length));
+  return deduped.length;
+}
+  
 function takeAvailPos(event, eventsPerHour) {
-  const conflictEvents = event.slots.reduce((events, hour) =>
-    events.concat(eventsPerHour[hour]
-      .filter(slotEvent => slotEvent !== event) // exclude `event`
-      .filter(slotEvent => slotEvent.end >= event.start)
-    ), []);
-  const takenPositions = new Set(conflictEvents.map(slotEvent => slotEvent.pos));
+  const takenPositions = getTakenPositions(event, eventsPerHour)
   const maxPos = computeMaxLen(event, eventsPerHour);
   return createRange(0, maxPos).find(pos => !takenPositions.has(pos));
 }
