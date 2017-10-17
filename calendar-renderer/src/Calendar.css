@@ -3,9 +3,15 @@
 }
 
 .Calendar-container {
-  box-sizing: border-box;
-  width: 620px;
-  height: 720px;
+  position: relative;
+  /*box-sizing: border-box;*/
   padding: 10px;
   background-color: #eeeeee;
+}
+
+.Calendar-event {
+  position: absolute;
+  box-sizing: border-box;
+  width: 100%; /* by default */
+  border: 1px solid blue; /* TODO */
 }
