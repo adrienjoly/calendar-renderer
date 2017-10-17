@@ -26,11 +26,13 @@ const getMinutes = hour =>
 const getHourClassName = hour =>
   Number.isInteger(hour) ? 'Calendar-axis-hour' : 'Calendar-axis-half';
 
+// to position hour and half hour entries on side axis
 const styleHourOnAxis = hour => ({
   height: 30 * PIXELS_PER_MINUTE,
   top: (hour - DAY_START_HR) * 60 * PIXELS_PER_MINUTE,
 });
 
+// to position events based on `pos` and `len` props
 const styleLaidEvent = event => ({
   height: (event.end - event.start) * PIXELS_PER_MINUTE,
   top: event.start * PIXELS_PER_MINUTE,
@@ -48,43 +50,47 @@ const createRange = (first, last) =>
 
 // layout helpers
 
-const getConflictingEvents = (event, eventsPerHour) =>
-  event.slots.reduce((conflictEvents, hour) =>
-    conflictEvents.concat(eventsPerHour[hour]), []);
+// returns an array of events conflicting/overlapping with a given event
+const getConflictingEvents = (event, eventSlots) =>
+  event.slots.reduce((conflictEvents, slot) =>
+    conflictEvents.concat(eventSlots[slot]), []);
 
-const getTakenPositions = (event, eventsPerHour) =>
-  new Set(getConflictingEvents(event, eventsPerHour)
-    .filter(slotEvent => slotEvent !== event) // exclude `event`
-    .filter(slotEvent => slotEvent.end >= event.start)
+// returns a Set of positions that were already affected to conflicting events
+const getTakenPositions = (event, eventSlots) =>
+  new Set(getConflictingEvents(event, eventSlots)
     .map(slotEvent => slotEvent.pos));
 
-const computeMaxLen = (event, eventsPerHour) => {
-  const conflictEvents = getConflictingEvents(event, eventsPerHour);
-  const deduped = Array.from(new Set(conflictEvents));
-  //return Math.max.apply(Math, event.slots.map(hour => eventsPerHour[hour].length));
-  return deduped.length;
-}
-  
-function takeAvailPos(event, eventsPerHour) {
-  const takenPositions = getTakenPositions(event, eventsPerHour)
-  const maxPos = computeMaxLen(event, eventsPerHour);
-  return createRange(0, maxPos).find(pos => !takenPositions.has(pos));
+// returns the maximum number of conflicting events, for a given event
+const computeMaxLen = (event, eventSlots) =>
+  event.slots.reduce((max, slot) => Math.max(max, eventSlots[slot].length), 0);
+
+// returns the first available position for an event, based on conflicting events
+// warning: this function mutates event
+function takeAvailPos(event, eventSlots) {
+  const takenPositions = getTakenPositions(event, eventSlots)
+  const maxPos = computeMaxLen(event, eventSlots);
+  return event.pos = createRange(0, maxPos).find(pos => !takenPositions.has(pos));
 }
 
+// returns an array of events that contain `pos` and `len` props (for positionning)
 function layoutEvents(events) {
-  let eventsPerHour = createArrayOfArrays(24);
+  let timestamps = new Set();
+  // 1) populate the `timestamps` Set + add a `slots` prop to each events
   let laidEvents = events.map(initialEvent => {
-    const startHour = Math.floor(initialEvent.start / 60);
-    const endHour = Math.ceil(initialEvent.end / 60);
-    let event = Object.assign({}, initialEvent, {
-      slots: createRange(startHour, endHour),
-    });
-    event.slots.forEach(hour => eventsPerHour[hour].push(event));
-    event.pos = takeAvailPos(event, eventsPerHour);
-    return event;
+    timestamps
+      .add(initialEvent.start)
+      .add(initialEvent.end)
+    return Object.assign({}, initialEvent, { slots: [] });
   });
-  return laidEvents.map((event) => Object.assign({}, event, {
-    len: computeMaxLen(event, eventsPerHour),
+  // 2) populate eventSlots based on events + timestamps
+  let eventSlots = Array.from(timestamps).sort().map((timestamp, index) => {
+    const containedEvents = laidEvents.filter(event => event.start <= timestamp && event.end > timestamp);
+    containedEvents.forEach(event => event.slots.push(index));
+    return containedEvents;
+  });
+  return laidEvents.map(event => Object.assign({}, event, {
+    pos: takeAvailPos(event, eventSlots),
+    len: computeMaxLen(event, eventSlots),
   }));
 }
 
