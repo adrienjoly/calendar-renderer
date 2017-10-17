@@ -27,6 +27,6 @@ setTimeout(() => {
     {start: 560, end: 620},
     {start: 610, end: 670}
   ]);
-}, 2000);
+}, 1);
 
 export default App;
