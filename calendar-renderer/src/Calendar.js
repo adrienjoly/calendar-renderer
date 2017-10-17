@@ -74,12 +74,31 @@ const renderEvents = events =>
     </div>
   );
 
+const renderAxis = () => {
+  const hours = createRange(2 * DAY_START / 60, 2 * DAY_END / 60)
+    .map(v => v / 2)
+    .map((v, i) => {
+      if (Number.isInteger(v)) {
+        return <p key={i} className="Calendar-axis-hour"><b>{v}:00</b> AM</p> /* todo: AM / PM */
+      } else {
+        return <p key={i} className="Calendar-axis-half">{Math.floor(v)}:30</p>
+      }
+    });
+  console.log(hours);
+  return (
+    <div className="Calendar-axis">
+      {hours}
+    </div>
+  );
+}
+
 // Calendar component
 
 class Calendar extends Component {
   render() {
     return (
       <div className="Calendar">
+        {renderAxis()}
         <div className="Calendar-container" style={containerStyle}>
           {renderEvents(this.props.events)}
         </div>

@@ -3,10 +3,29 @@
   text-align: left;
 }
 
+.Calendar-axis {
+  float: left;
+  text-align: right;
+  margin-right: 8px;
+}
+
+.Calendar-axis-hour,
+.Calendar-axis-half {
+  color: #aaa; /* todo */
+  font-size: 8px;
+}
+
+.Calendar-axis-hour b {
+  color: #8F8F87;
+  font-size: 11px;
+}
+
 .Calendar-container {
+  float: left;
   position: relative;
   box-sizing: border-box;
   background-color: #ececec;
+  border-left: 1px solid #e0e0e0;
 }
 
 .Calendar-event {
