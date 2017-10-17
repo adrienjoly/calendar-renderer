@@ -19,49 +19,43 @@ const containerStyle = {
 const createArrayOfArrays = length =>
   Array.apply(null, { length }).map(() => []);
 
-function layoutEvents(events) {
+const createRange = (first, last) =>
+  Array.apply(null, { length: 1 + last - first }).map((v, i) => first + i);
 
-  let eventsPerHour = createArrayOfArrays(24);
+const computeMaxLen = (event, eventsPerHour) =>
+  Math.max.apply(Math, event.slots.map(hour => eventsPerHour[hour].length));
 
-  const computeMaxLen = event =>
-    Math.max.apply(Math, event.slots.map(hour => eventsPerHour[hour].length))
-
-  function takeAvailPos(event, eventsPerHour) {
-    const conflictEvents = event.slots.reduce((events, hour) =>
-      events.concat(eventsPerHour[hour].filter(slotEvent =>
-        slotEvent !== event)), []);
-    // TODO: remove duplicate events
-    console.log('conflict events:', conflictEvents);
-    const maxLen = computeMaxLen(event);
-    const takenPositions = new Set(conflictEvents.map(slotEvent => slotEvent.pos));
-    console.log('token positions:', takenPositions);
-    for (let pos = 0; pos < maxLen; ++pos) {
-      if (!takenPositions.has(pos)) {
-        return pos;
-      }
+function takeAvailPos(event, eventsPerHour) {
+  const conflictEvents = event.slots.reduce((events, hour) =>
+    events.concat(eventsPerHour[hour].filter(slotEvent =>
+      slotEvent !== event)), []);
+  // TODO: remove duplicate events
+  console.log('conflict events:', conflictEvents);
+  const maxLen = computeMaxLen(event, eventsPerHour);
+  const takenPositions = new Set(conflictEvents.map(slotEvent => slotEvent.pos));
+  console.log('token positions:', takenPositions);
+  for (let pos = 0; pos < maxLen; ++pos) {
+    if (!takenPositions.has(pos)) {
+      return pos;
     }
   }
+}
 
-  // TODO: sort events by start time first?
-
+function layoutEvents(events) {
+  let eventsPerHour = createArrayOfArrays(24);
   let laidEvents = events.map(initialEvent => {
     let idCounter = 0;
-    let slots = []
+    const startHour = Math.floor(initialEvent.start / 60);
+    const endHour = Math.ceil(initialEvent.start / 60);
     let event = Object.assign({ id: idCounter++ }, initialEvent, {
-      startHour: Math.floor(initialEvent.start / 60),
-      endHour: Math.ceil(initialEvent.start / 60),
-      slots,
+      slots: createRange(startHour, endHour),
     });
-    for (let hour = event.startHour; hour <= event.endHour; ++hour) {
-      slots.push(hour);
-      eventsPerHour[hour].push(event);
-    }
+    event.slots.forEach(hour => eventsPerHour[hour].push(event));
     event.pos = takeAvailPos(event, eventsPerHour);
     return event;
   });
-
   return laidEvents.map((event) => Object.assign({}, event, {
-    len: computeMaxLen(event),
+    len: computeMaxLen(event, eventsPerHour),
   }));
 }
 
