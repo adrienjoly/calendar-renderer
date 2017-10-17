@@ -3,16 +3,17 @@ import './Calendar.css';
 
 const DAY_START = 9 * 60; // in minutes => 9am
 const DAY_END = 21 * 60; // in minutes => 9pm
-const CONTAINER_WIDTH = 600; // not including 2 x 10px padding
-const CONTAINER_HEIGHT = 700; // not including 2 x 10px padding
+const CONTAINER_WIDTH = 600; // not including padding
+const CONTAINER_HEIGHT = 700; // not including padding
+const CONTAINER_PADDING = 10; // in px
 
 // computed constants
 const HOURS_PER_DAY = DAY_END - DAY_START;
 const PIXELS_PER_MINUTE = CONTAINER_HEIGHT / HOURS_PER_DAY;
 
 const containerStyle = {
-  width: `${CONTAINER_WIDTH}px`,
-  height: `${CONTAINER_HEIGHT}px`,
+  width: `${CONTAINER_WIDTH + 2 * CONTAINER_PADDING}px`,
+  height: `${CONTAINER_HEIGHT + 2 * CONTAINER_PADDING}px`,
 };
 
 class Calendar extends Component {

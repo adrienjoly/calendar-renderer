@@ -4,8 +4,7 @@
 
 .Calendar-container {
   position: relative;
-  /*box-sizing: border-box;*/
-  padding: 10px;
+  box-sizing: border-box;
   background-color: #eeeeee;
 }
 
