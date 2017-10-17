@@ -4,10 +4,10 @@ import Calendar from './Calendar';
 
 const EVENTS = [
   {start: 30, end: 150},
-  {start: 140, end: 180}, // should overlap with the previous
+  {start: 140, end: 180}, // test: should overlap with the previous
   {start: 540, end: 600},
   {start: 560, end: 620},
-  {start: 610, end: 670}
+  {start: 610, end: 670} // test: should be at position 0
 ];
 
 const EVENTS_WITH_IDS = (events => {

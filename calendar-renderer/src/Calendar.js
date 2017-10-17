@@ -53,8 +53,10 @@ const computeMaxLen = (event, eventsPerHour) =>
 
 function takeAvailPos(event, eventsPerHour) {
   const conflictEvents = event.slots.reduce((events, hour) =>
-    events.concat(eventsPerHour[hour].filter(slotEvent =>
-      slotEvent !== event)), []);
+    events.concat(eventsPerHour[hour]
+      .filter(slotEvent => slotEvent !== event) // exclude `event`
+      .filter(slotEvent => slotEvent.end >= event.start)
+    ), []);
   const takenPositions = new Set(conflictEvents.map(slotEvent => slotEvent.pos));
   const maxPos = computeMaxLen(event, eventsPerHour);
   return createRange(0, maxPos).find(pos => !takenPositions.has(pos));
