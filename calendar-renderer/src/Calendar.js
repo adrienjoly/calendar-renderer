@@ -20,17 +20,11 @@ const createArrayOfArrays = length =>
   Array.apply(null, { length }).map(() => []);
 
 function layoutEvents(events) {
-  let idCounter = 0;
-  let laidEvents = events.map(event => Object.assign({id: idCounter++}, event, {
-    startHour: Math.floor(event.start / 60),
-    endHour: Math.ceil(event.start / 60),
-    slots: [],
-  }));
 
   let eventsPerHour = createArrayOfArrays(24);
-  
+
   const computeMaxLen = event =>
-  Math.max.apply(Math, event.slots.map(hour => eventsPerHour[hour].length))
+    Math.max.apply(Math, event.slots.map(hour => eventsPerHour[hour].length))
 
   function takeAvailPos(event, eventsPerHour) {
     const conflictEvents = event.slots.reduce((events, hour) =>
@@ -49,16 +43,22 @@ function layoutEvents(events) {
   }
 
   // TODO: sort events by start time first?
-  eventsPerHour = laidEvents.reduce((eventsPerHour, event) => {
+
+  let laidEvents = events.map(initialEvent => {
+    let idCounter = 0;
+    let slots = []
+    let event = Object.assign({ id: idCounter++ }, initialEvent, {
+      startHour: Math.floor(initialEvent.start / 60),
+      endHour: Math.ceil(initialEvent.start / 60),
+      slots,
+    });
     for (let hour = event.startHour; hour <= event.endHour; ++hour) {
-      event.slots.push(hour);
+      slots.push(hour);
       eventsPerHour[hour].push(event);
     }
-    if (isNaN(event.pos)) {
-      event.pos = takeAvailPos(event, eventsPerHour);
-    }
-    return eventsPerHour;
-  }, eventsPerHour);
+    event.pos = takeAvailPos(event, eventsPerHour);
+    return event;
+  });
 
   return laidEvents.map((event) => Object.assign({}, event, {
     len: computeMaxLen(event),
