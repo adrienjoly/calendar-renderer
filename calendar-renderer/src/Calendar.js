@@ -6,8 +6,8 @@ const DAY_END_HR = 21; // 9pm
 const DAY_START = DAY_START_HR * 60; // => in minutes
 const DAY_END = DAY_END_HR * 60; // => in minutes
 const CONTAINER_WIDTH = 600; // not including padding
-const CONTAINER_HEIGHT = 700; // not including padding
-const CONTAINER_PADDING = 10; // in px
+const CONTAINER_HEIGHT = 720;
+const CONTAINER_PADDING = 10; // in px (left and right only)
 
 // computed constants
 
@@ -17,8 +17,11 @@ const PIXELS_PER_MINUTE = CONTAINER_HEIGHT / MINUTES_PER_DAY;
 const containerStyle = {
   width: CONTAINER_WIDTH + 2 * CONTAINER_PADDING,
   height: CONTAINER_HEIGHT,
-  padding: CONTAINER_PADDING,
+  padding: `0 ${CONTAINER_PADDING}px`,
 };
+
+const getMinutes = hour =>
+  Number.isInteger(hour) ? '00' : '30';
 
 const getHourClassName = hour =>
   Number.isInteger(hour) ? 'Calendar-axis-hour' : 'Calendar-axis-half';
@@ -79,13 +82,13 @@ function layoutEvents(events) {
 const renderEvents = events =>
   layoutEvents(events).map((event, index) =>
     <div key={index} className="Calendar-event" style={styleLaidEvent(event)}>
-      <div className="Calendar-event-name">Sample Item ({event.start})</div>
+      <div className="Calendar-event-name">Sample Item</div>
       <div className="Calendar-event-location">Sample Location</div>
     </div>
   );
 
-const renderAxis = () => {
-  const hours = createRange(2 * DAY_START / 60, 2 * DAY_END / 60)
+const renderHours = () =>
+  createRange(2 * DAY_START / 60, 2 * DAY_END / 60)
     .map(v => v / 2)
     .map((hour, i) => (
       <p
@@ -93,16 +96,15 @@ const renderAxis = () => {
         className={getHourClassName(hour)}
         style={styleHourOnAxis(hour)}
       >
-        <b>{1 + (Math.floor(hour) - 1) % 12}:00</b> AM
-      </p> /* todo: 00/30 and AM/PM */
+        <span className="axis-time">
+          {1 + (Math.floor(hour) - 1) % 12}:{getMinutes(hour)}
+        </span>
+        &nbsp;
+        <span className="axis-day-period">
+          {hour < 12 ? 'AM' : 'PM'}
+        </span>
+      </p>
     ));
-  console.log(hours);
-  return (
-    <div className="Calendar-axis">
-      {hours}
-    </div>
-  );
-}
 
 // Calendar component
 
@@ -110,7 +112,9 @@ class Calendar extends Component {
   render() {
     return (
       <div className="Calendar">
-        {renderAxis()}
+        <div className="Calendar-axis">
+          {renderHours()}
+        </div>
         <div className="Calendar-container" style={containerStyle}>
           {renderEvents(this.props.events)}
         </div>
