@@ -29,16 +29,9 @@ function takeAvailPos(event, eventsPerHour) {
   const conflictEvents = event.slots.reduce((events, hour) =>
     events.concat(eventsPerHour[hour].filter(slotEvent =>
       slotEvent !== event)), []);
-  // TODO: remove duplicate events
-  console.log('conflict events:', conflictEvents);
-  const maxLen = computeMaxLen(event, eventsPerHour);
   const takenPositions = new Set(conflictEvents.map(slotEvent => slotEvent.pos));
-  console.log('token positions:', takenPositions);
-  for (let pos = 0; pos < maxLen; ++pos) {
-    if (!takenPositions.has(pos)) {
-      return pos;
-    }
-  }
+  const maxPos = computeMaxLen(event, eventsPerHour);
+  return createRange(0, maxPos).find(pos => !takenPositions.has(pos));
 }
 
 function layoutEvents(events) {
