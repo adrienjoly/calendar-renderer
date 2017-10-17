@@ -1,26 +1,36 @@
 import React, { Component } from 'react';
 import './Calendar.css';
 
-const DAY_START = 9 * 60; // in minutes => 9am
-const DAY_END = 21 * 60; // in minutes => 9pm
+const DAY_START_HR = 9; // 9am
+const DAY_END_HR = 21; // 9pm
+const DAY_START = DAY_START_HR * 60; // => in minutes
+const DAY_END = DAY_END_HR * 60; // => in minutes
 const CONTAINER_WIDTH = 600; // not including padding
 const CONTAINER_HEIGHT = 700; // not including padding
 const CONTAINER_PADDING = 10; // in px
 
 // computed constants
 
-const HOURS_PER_DAY = DAY_END - DAY_START;
-const PIXELS_PER_MINUTE = CONTAINER_HEIGHT / HOURS_PER_DAY;
+const MINUTES_PER_DAY = DAY_END - DAY_START;
+const PIXELS_PER_MINUTE = CONTAINER_HEIGHT / MINUTES_PER_DAY;
 
 const containerStyle = {
   width: CONTAINER_WIDTH + 2 * CONTAINER_PADDING,
-  height: CONTAINER_HEIGHT + 2 * CONTAINER_PADDING,
+  height: CONTAINER_HEIGHT,
   padding: CONTAINER_PADDING,
 };
 
+const getHourClassName = hour =>
+  Number.isInteger(hour) ? 'Calendar-axis-hour' : 'Calendar-axis-half';
+
+const styleHourOnAxis = hour => ({
+  height: 30 * PIXELS_PER_MINUTE,
+  top: (hour - DAY_START_HR) * 60 * PIXELS_PER_MINUTE,
+});
+
 const styleLaidEvent = event => ({
   height: (event.end - event.start) * PIXELS_PER_MINUTE,
-  top: CONTAINER_PADDING + event.start * PIXELS_PER_MINUTE,
+  top: event.start * PIXELS_PER_MINUTE,
   left: CONTAINER_PADDING + CONTAINER_WIDTH * (event.pos / event.len),
   width: CONTAINER_WIDTH / event.len,
 });
@@ -77,13 +87,15 @@ const renderEvents = events =>
 const renderAxis = () => {
   const hours = createRange(2 * DAY_START / 60, 2 * DAY_END / 60)
     .map(v => v / 2)
-    .map((v, i) => {
-      if (Number.isInteger(v)) {
-        return <p key={i} className="Calendar-axis-hour"><b>{v}:00</b> AM</p> /* todo: AM / PM */
-      } else {
-        return <p key={i} className="Calendar-axis-half">{Math.floor(v)}:30</p>
-      }
-    });
+    .map((hour, i) => (
+      <p
+        key={i}
+        className={getHourClassName(hour)}
+        style={styleHourOnAxis(hour)}
+      >
+        <b>{1 + (Math.floor(hour) - 1) % 12}:00</b> AM
+      </p> /* todo: 00/30 and AM/PM */
+    ));
   console.log(hours);
   return (
     <div className="Calendar-axis">
